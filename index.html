@@ -80,8 +80,12 @@
 
                 init() {
                     this.loadItems();
-                    this.$watch('items', () => this.saveItems());
+                    this.$watch('items', () => {
+                        this.saveItems();
+                        this.updateScaledSizes();
+                    });
                     this.$watch('metric', () => this.updateScaledSizes());
+                    this.updateScaledSizes(); // Add this line
                 },
 
                 addItem() {
@@ -173,7 +177,7 @@
                     const savedItems = localStorage.getItem('items');
                     if (savedItems) {
                         this.items = JSON.parse(savedItems);
-                        this.updateScaledSizes();
+                        this.updateScaledSizes(); // Add this line
                     }
                 },
 
