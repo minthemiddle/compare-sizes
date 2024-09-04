@@ -51,7 +51,7 @@
         <div class="relative bg-white border border-gray-300" style="height: 500px; width: 100%;">
             <template x-for="(item, index) in items" :key="index">
                 <div :style="`position: absolute; left: 0; top: 0; width: ${item.scaledWidth}px; height: ${item.scaledHeight}px; border: 2px solid hsl(${item.color.split(',')[0]}, ${item.color.split(',')[1]}%, ${item.color.split(',')[2]}%); background-color: hsla(${item.color.split(',')[0]}, ${item.color.split(',')[1]}%, ${item.color.split(',')[2]}%, 0.3); z-index: ${items.length - index};`">
-                    <span :style="`color: hsl(${item.color.split(',')[0]}, ${item.color.split(',')[1]}%, ${item.color.split(',')[2]}%); position: absolute; ${item.labelPosition}; padding: 4px; background-color: rgba(255, 255, 255, 0.7); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;`" x-text="item.name"></span>
+                    <span :style="`color: hsl(${item.color.split(',')[0]}, ${item.color.split(',')[1]}%, ${item.color.split(',')[2]}%); position: absolute; ${item.scaledWidth > item.scaledHeight ? 'bottom: 0; left: 0;' : 'top: 0; right: 0;'}; padding: 2px; background-color: rgba(255, 255, 255, 0.7); font-size: ${Math.max(10, Math.min(14, item.scaledWidth / 8))}px; max-width: 100%; max-height: 100%; overflow: hidden; text-overflow: ellipsis; word-break: break-word; box-sizing: border-box;`" x-text="item.name"></span>
                 </div>
             </template>
         </div>
@@ -137,40 +137,6 @@
                         item.scaledHeight = Math.max(item.height * scale, 20); // Minimum size of 20px
                         item.scaledWidth = Math.max(item.width * scale, 20); // Minimum size of 20px
                     });
-                    this.updateLabelPositions();
-                },
-
-                updateLabelPositions() {
-                    const positions = ['bottom: 0; left: 0;', 'top: 0; left: 0;', 'top: 0; right: 0;', 'bottom: 0; right: 0;'];
-                    let usedPositions = new Set();
-
-                    this.items.forEach((item, index) => {
-                        let bestPosition = positions[0];
-                        for (let pos of positions) {
-                            if (!this.checkOverlap(item, pos, usedPositions)) {
-                                bestPosition = pos;
-                                break;
-                            }
-                        }
-                        item.labelPosition = bestPosition;
-                        usedPositions.add(JSON.stringify({x: item.scaledWidth, y: item.scaledHeight, pos: bestPosition}));
-                    });
-                },
-
-                checkOverlap(item, position, usedPositions) {
-                    const [verticalPos, horizontalPos] = position.split(';').map(p => p.trim().split(':')[0]);
-                    const x = horizontalPos === 'left' ? 0 : item.scaledWidth;
-                    const y = verticalPos === 'top' ? 0 : item.scaledHeight;
-
-                    for (let usedPos of usedPositions) {
-                        const used = JSON.parse(usedPos);
-                        const dx = Math.abs(x - used.x);
-                        const dy = Math.abs(y - used.y);
-                        if (dx < 50 && dy < 20) {  // Assuming label size
-                            return true;  // Overlap detected
-                        }
-                    }
-                    return false;
                 },
 
                 loadItems() {
