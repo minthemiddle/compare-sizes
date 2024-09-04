@@ -50,8 +50,8 @@
 
         <div class="relative bg-white border border-gray-300" style="height: 500px; width: 100%;">
             <template x-for="(item, index) in items" :key="index">
-                <div :style="`position: absolute; left: ${index * 20}px; top: ${index * 20}px; width: ${item.scaledWidth}px; height: ${item.scaledHeight}px; border: 2px solid hsl(${item.color}); background-color: hsla(${item.color}, 0.3);`">
-                    <span :style="`color: hsl(${item.color}); position: absolute; bottom: 0; left: 0; padding: 4px; background-color: rgba(255, 255, 255, 0.7);`" x-text="item.name"></span>
+                <div :style="`position: absolute; left: ${index * 20}px; top: ${index * 20}px; width: ${item.scaledWidth}px; height: ${item.scaledHeight}px; border: 2px solid hsl(${item.color.split(',')[0]}, ${item.color.split(',')[1]}%, ${item.color.split(',')[2]}%); background-color: hsla(${item.color.split(',')[0]}, ${item.color.split(',')[1]}%, ${item.color.split(',')[2]}%, 0.3);`">
+                    <span :style="`color: hsl(${item.color.split(',')[0]}, ${item.color.split(',')[1]}%, ${item.color.split(',')[2]}%); position: absolute; bottom: 0; left: 0; padding: 4px; background-color: rgba(255, 255, 255, 0.7);`" x-text="item.name"></span>
                 </div>
             </template>
         </div>
