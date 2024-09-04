@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Item Size Comparison</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/@alpinejs/mask@3.x.x/dist/cdn.min.js" defer></script>
+</head>
+<body class="bg-gray-100 p-8">
+    <div x-data="app()" x-init="init()" class="max-w-4xl mx-auto">
+        <h1 class="text-3xl font-bold mb-4">Item Size Comparison</h1>
+
+        <div class="mb-4">
+            <label class="block mb-2">Metric:</label>
+            <div>
+                <label class="inline-flex items-center mr-4">
+                    <input type="radio" x-model="metric" value="in" class="form-radio">
+                    <span class="ml-2">Inches</span>
+                </label>
+                <label class="inline-flex items-center mr-4">
+                    <input type="radio" x-model="metric" value="cm" class="form-radio">
+                    <span class="ml-2">Centimeters</span>
+                </label>
+                <label class="inline-flex items-center">
+                    <input type="radio" x-model="metric" value="px" class="form-radio">
+                    <span class="ml-2">Pixels</span>
+                </label>
+            </div>
+        </div>
+
+        <form @submit.prevent="addItem" class="mb-8">
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block mb-2">Name:</label>
+                    <input type="text" x-model="newItem.name" class="w-full p-2 border rounded" required>
+                </div>
+                <div>
+                    <label class="block mb-2">Dimensions (H x W x L):</label>
+                    <input type="text" x-model="newItem.dimensions" x-mask="99 x 99 x 99" placeholder="__ x __ x __" class="w-full p-2 border rounded" required>
+                </div>
+                <div>
+                    <label class="block mb-2">Color (H,S,L):</label>
+                    <input type="text" x-model="newItem.color" x-mask="999,99,99" placeholder="___,__,__" class="w-full p-2 border rounded" required>
+                </div>
+            </div>
+            <button type="submit" class="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">Add Item</button>
+        </form>
+
+        <div class="relative" style="height: 500px;">
+            <template x-for="(item, index) in items" :key="index">
+                <div :style="`position: absolute; left: 0; top: 0; width: ${item.scaledWidth}px; height: ${item.scaledHeight}px; border: 2px solid hsl(${item.color}); transform: translate(${index * 20}px, ${index * 20}px);`">
+                    <span :style="`color: hsl(${item.color}); position: absolute; bottom: 0; left: 0; padding: 4px;`" x-text="item.name"></span>
+                </div>
+            </template>
+        </div>
+
+        <div class="mt-8">
+            <h2 class="text-2xl font-bold mb-4">Item List</h2>
+            <ul>
+                <template x-for="(item, index) in items" :key="index">
+                    <li class="mb-2 p-2 bg-white rounded shadow">
+                        <span x-text="`${item.name} (${item.dimensions})`"></span>
+                        <button @click="editItem(index)" class="ml-2 px-2 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600">Edit</button>
+                        <button @click="deleteItem(index)" class="ml-2 px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600">Delete</button>
+                    </li>
+                </template>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        function app() {
+            return {
+                items: [],
+                newItem: { name: '', dimensions: '', color: '' },
+                metric: 'in',
+                maxSize: 0,
+
+                init() {
+                    this.loadItems();
+                    this.$watch('items', () => this.saveItems());
+                    this.$watch('metric', () => this.updateScaledSizes());
+                },
+
+                addItem() {
+                    if (this.items.length >= 20) {
+                        alert('Maximum of 20 items reached');
+                        return;
+                    }
+
+                    const [h, w, l] = this.newItem.dimensions.split('x').map(n => parseInt(n.trim()));
+                    const item = {
+                        ...this.newItem,
+                        height: h,
+                        width: w,
+                        length: l,
+                        color: this.newItem.color || `${Math.random() * 360},${Math.random() * 100},${Math.random() * 100}`
+                    };
+                    this.items.push(item);
+                    this.newItem = { name: '', dimensions: '', color: '' };
+                    this.updateScaledSizes();
+                },
+
+                editItem(index) {
+                    const item = this.items[index];
+                    this.newItem = {
+                        name: item.name,
+                        dimensions: `${item.height} x ${item.width} x ${item.length}`,
+                        color: item.color
+                    };
+                    this.deleteItem(index);
+                },
+
+                deleteItem(index) {
+                    this.items.splice(index, 1);
+                    this.updateScaledSizes();
+                },
+
+                updateScaledSizes() {
+                    this.maxSize = Math.max(...this.items.map(item => Math.max(item.height, item.width, item.length)));
+                    const scale = 400 / this.maxSize;
+                    this.items.forEach(item => {
+                        item.scaledHeight = item.height * scale;
+                        item.scaledWidth = item.width * scale;
+                    });
+                },
+
+                loadItems() {
+                    const savedItems = localStorage.getItem('items');
+                    if (savedItems) {
+                        this.items = JSON.parse(savedItems);
+                        this.updateScaledSizes();
+                    }
+                },
+
+                saveItems() {
+                    localStorage.setItem('items', JSON.stringify(this.items));
+                }
+            };
+        }
+    </script>
+</body>
+</html>
