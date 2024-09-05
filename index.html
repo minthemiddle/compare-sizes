@@ -21,9 +21,9 @@
                 </div>
             </div>
             <div class="mb-4">
-                <label for="item-dimensions" class="block mb-2">Dimensions (H x W x L):</label>
+                <label for="item-dimensions" class="block mb-2">Dimensions (H x W):</label>
                 <div class="flex items-center">
-                    <input id="item-dimensions" type="text" x-model="newItem.dimensions" x-mask:dynamic="dimensionsMask" @keydown.tab.prevent="handleTabInDimensions" aria-label="Item dimensions" aria-description="Enter height, width, and length separated by 'x'" placeholder="__ x __ x __" class="w-full p-2 border rounded" required>
+                    <input id="item-dimensions" type="text" x-model="newItem.dimensions" x-mask:dynamic="dimensionsMask" @keydown.tab.prevent="handleTabInDimensions" aria-label="Item dimensions" aria-description="Enter height and width separated by 'x'" placeholder="__ x __" class="w-full p-2 border rounded" required>
                     <span class="ml-2 text-sm text-gray-500">(Use same metric for all items, e.g. px, mm, in)</span>
                 </div>
             </div>
@@ -94,12 +94,11 @@
                         return;
                     }
 
-                    const [h, w, l] = this.newItem.dimensions.split('x').map(n => parseInt(n.trim()));
+                    const [h, w] = this.newItem.dimensions.split('x').map(n => parseInt(n.trim()));
                     const item = {
                         ...this.newItem,
                         height: h,
                         width: w,
-                        length: l,
                     };
                     this.items.push(item);
                     this.newItem = { name: '', dimensions: '' };
@@ -111,7 +110,7 @@
                     const item = this.items[index];
                     this.newItem = {
                         name: item.name,
-                        dimensions: `${item.height} x ${item.width} x ${item.length}`,
+                        dimensions: `${item.height} x ${item.width}`,
                     };
                     this.deleteItem(index);
                 },
@@ -133,7 +132,7 @@
                 updateScaledSizes() {
                     const containerHeight = 500;
                     const containerWidth = document.querySelector('.relative').offsetWidth;
-                    this.maxSize = Math.max(...this.items.map(item => Math.max(item.height, item.width, item.length)));
+                    this.maxSize = Math.max(...this.items.map(item => Math.max(item.height, item.width)));
                     const scaleHeight = containerHeight / this.maxSize;
                     const scaleWidth = containerWidth / this.maxSize;
                     const scale = Math.min(scaleHeight, scaleWidth, 20);
@@ -216,7 +215,7 @@
                 dimensionsMask($input) {
                     const parts = $input.split('x').map(part => part.trim());
                     let mask = '';
-                    for (let i = 0; i < 3; i++) {
+                    for (let i = 0; i < 2; i++) {
                         if (i > 0) mask += ' x ';
                         mask += parts[i] ? '99' : '__';
                     }
@@ -226,7 +225,7 @@
                 handleTabInDimensions(event) {
                     const parts = this.newItem.dimensions.split('x').map(part => part.trim());
                     const focusedPart = parts.findIndex(part => part === '');
-                    if (focusedPart === -1 || focusedPart === 2) return;
+                    if (focusedPart === -1 || focusedPart === 1) return;
                     
                     event.preventDefault();
                     const newParts = [...parts];
