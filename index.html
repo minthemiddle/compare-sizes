@@ -23,7 +23,7 @@
             <div class="mb-4">
                 <label for="item-dimensions" class="block mb-2">Dimensions (H x W x L):</label>
                 <div class="flex items-center">
-                    <input id="item-dimensions" type="text" x-model="newItem.dimensions" x-mask="99 'x' 99 'x' 99" aria-label="Item dimensions" aria-description="Enter height, width, and length separated by 'x'" placeholder="__ x __ x __" class="w-full p-2 border rounded" required>
+                    <input id="item-dimensions" type="text" x-model="newItem.dimensions" x-mask:dynamic="dimensionsMask" @keydown.tab.prevent="handleTabInDimensions" aria-label="Item dimensions" aria-description="Enter height, width, and length separated by 'x'" placeholder="__ x __ x __" class="w-full p-2 border rounded" required>
                     <span class="ml-2 text-sm text-gray-500">(Use same metric for all items, e.g. px, mm, in)</span>
                 </div>
             </div>
@@ -211,6 +211,34 @@
 
                 saveItems() {
                     localStorage.setItem('items', JSON.stringify(this.items));
+                },
+
+                dimensionsMask($input) {
+                    const parts = $input.split('x').map(part => part.trim());
+                    let mask = '';
+                    for (let i = 0; i < 3; i++) {
+                        if (i > 0) mask += ' x ';
+                        mask += parts[i] ? '99' : '__';
+                    }
+                    return mask;
+                },
+
+                handleTabInDimensions(event) {
+                    const parts = this.newItem.dimensions.split('x').map(part => part.trim());
+                    const focusedPart = parts.findIndex(part => part === '');
+                    if (focusedPart === -1 || focusedPart === 2) return;
+                    
+                    event.preventDefault();
+                    const newParts = [...parts];
+                    newParts[focusedPart + 1] = '';
+                    this.newItem.dimensions = newParts.join(' x ');
+                    
+                    // Force Alpine to re-evaluate the input
+                    this.$nextTick(() => {
+                        const input = event.target;
+                        const newCursorPos = this.newItem.dimensions.indexOf('x', input.selectionStart) + 2;
+                        input.setSelectionRange(newCursorPos, newCursorPos);
+                    });
                 }
             };
         }
