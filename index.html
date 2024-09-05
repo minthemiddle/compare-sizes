@@ -51,26 +51,20 @@
         <div class="relative bg-white border border-gray-300" style="height: 500px; width: 100%;">
             <template x-for="(item, index) in items" :key="index">
                 <div :style="`position: absolute; left: 0; top: 0; width: ${item.scaledWidth}px; height: ${item.scaledHeight}px; border: 2px solid hsl(${item.color.split(',')[0]}, ${item.color.split(',')[1]}%, ${item.color.split(',')[2]}%); background-color: hsla(${item.color.split(',')[0]}, ${item.color.split(',')[1]}%, ${item.color.split(',')[2]}%, 0.3); z-index: ${items.length - index};`">
-                    <span :style="`
-                        color: hsl(${item.color.split(',')[0]}, ${item.color.split(',')[1]}%, ${item.color.split(',')[2]}%);
-                        position: absolute;
-                        ${item.labelPosition === 'top' ? 'top: -20px; left: 0;' : 
-                          item.labelPosition === 'right' ? 'top: 0; right: -100px;' :
-                          item.labelPosition === 'bottom' ? 'bottom: -20px; left: 0;' :
-                          'top: 0; left: -100px;'};
-                        padding: 2px;
-                        background-color: rgba(255, 255, 255, 0.7);
-                        font-size: ${Math.max(10, Math.min(14, item.scaledWidth / 8))}px;
-                        max-width: 100px;
-                        max-height: 40px;
-                        overflow: hidden;
-                        text-overflow: ellipsis;
-                        word-break: break-word;
-                        box-sizing: border-box;
-                        white-space: nowrap;
-                    `" x-text="item.name"></span>
                 </div>
             </template>
+        </div>
+
+        <div class="mt-8">
+            <h2 class="text-2xl font-bold mb-4">Legend</h2>
+            <ul>
+                <template x-for="(item, index) in items" :key="index">
+                    <li class="mb-2 p-2 bg-white rounded shadow flex items-center">
+                        <div :style="`width: 20px; height: 20px; background-color: hsl(${item.color.split(',')[0]}, ${item.color.split(',')[1]}%, ${item.color.split(',')[2]}%); margin-right: 10px;`"></div>
+                        <span x-text="item.name"></span>
+                    </li>
+                </template>
+            </ul>
         </div>
 
         <div class="mt-8">
@@ -153,61 +147,9 @@
                     this.items.forEach((item, index) => {
                         item.scaledHeight = Math.max(item.height * scale, 20);
                         item.scaledWidth = Math.max(item.width * scale, 20);
-                        item.labelPosition = this.calculateLabelPosition(item, index);
                     });
                 },
 
-                calculateLabelPosition(item, index) {
-                    const positions = ['top', 'right', 'bottom', 'left'];
-                    let bestPosition = 'top';
-                    let minOverlap = Infinity;
-
-                    positions.forEach(position => {
-                        let overlap = this.calculateOverlap(item, position, index);
-                        if (overlap < minOverlap) {
-                            minOverlap = overlap;
-                            bestPosition = position;
-                        }
-                    });
-
-                    return bestPosition;
-                },
-
-                calculateOverlap(item, position, index) {
-                    const labelWidth = Math.min(item.scaledWidth, 100);
-                    const labelHeight = 20;
-                    let labelX, labelY;
-
-                    switch (position) {
-                        case 'top':
-                            labelX = 0;
-                            labelY = -labelHeight;
-                            break;
-                        case 'right':
-                            labelX = item.scaledWidth;
-                            labelY = 0;
-                            break;
-                        case 'bottom':
-                            labelX = 0;
-                            labelY = item.scaledHeight;
-                            break;
-                        case 'left':
-                            labelX = -labelWidth;
-                            labelY = 0;
-                            break;
-                    }
-
-                    let overlap = 0;
-                    this.items.forEach((otherItem, otherIndex) => {
-                        if (otherIndex !== index) {
-                            const dx = Math.min(item.scaledWidth + labelWidth, Math.max(0, labelX + labelWidth - otherItem.scaledWidth));
-                            const dy = Math.min(item.scaledHeight + labelHeight, Math.max(0, labelY + labelHeight - otherItem.scaledHeight));
-                            overlap += dx * dy;
-                        }
-                    });
-
-                    return overlap;
-                },
 
                 loadItems() {
                     const savedItems = localStorage.getItem('items');
