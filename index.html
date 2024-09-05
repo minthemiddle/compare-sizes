@@ -46,7 +46,7 @@
                     <li class="mb-2 p-2 bg-white rounded shadow flex items-center justify-between">
                         <div class="flex items-center">
                             <div :style="`width: 20px; height: 20px; background-color: hsl(${item.color.split(',')[0]}, ${item.color.split(',')[1]}%, ${item.color.split(',')[2]}%); margin-right: 10px;`"></div>
-                            <span x-text="`${item.name} (${item.dimensions})`"></span>
+                            <span x-text="`${item.name}: ${item.dimensions}`"></span>
                         </div>
                         <div>
                             <button @click="editItem(index)" aria-label="Edit item" class="ml-2 px-2 py-1 border border-yellow-700 text-yellow-700 rounded hover:bg-yellow-700 hover:text-white">Edit</button>
