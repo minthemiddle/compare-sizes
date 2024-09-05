@@ -14,20 +14,18 @@
 
         <h2 class="text-2xl font-bold mb-4">Add New Item</h2>
         <form @submit.prevent="addItem" class="mb-8">
-            <div class="grid grid-cols-2 gap-4">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
                     <label for="item-name" class="block mb-2">Name:</label>
                     <input id="item-name" type="text" x-model="newItem.name" aria-label="Item name" class="w-full p-2 border rounded" required>
                 </div>
-            </div>
-            <div class="mb-4 grid grid-cols-2 gap-4">
                 <div>
                     <label for="item-height" class="block mb-2">Height (H):</label>
-                    <input id="item-height" type="text" x-model="newItem.height" aria-label="Item height" class="w-full p-2 border rounded" required pattern="[0-9]+(\.[0-9]+)?">
+                    <input id="item-height" type="number" step="0.01" x-model="newItem.height" aria-label="Item height" class="w-full p-2 border rounded" required>
                 </div>
                 <div>
                     <label for="item-width" class="block mb-2">Width (W):</label>
-                    <input id="item-width" type="text" x-model="newItem.width" aria-label="Item width" class="w-full p-2 border rounded" required pattern="[0-9]+(\.[0-9]+)?">
+                    <input id="item-width" type="number" step="0.01" x-model="newItem.width" aria-label="Item width" class="w-full p-2 border rounded" required>
                 </div>
             </div>
             <div class="mb-4">
@@ -69,7 +67,7 @@
         function app() {
             return {
                 items: [],
-                newItem: { name: '', dimensions: '' },
+                newItem: { name: '', height: '', width: '' },
                 metric: 'in',
                 maxSize: 0,
 
@@ -101,23 +99,24 @@
                         return;
                     }
 
-                    const [h, w] = this.newItem.dimensions.split('x').map(n => parseInt(n.trim()));
                     const item = {
-                        ...this.newItem,
-                        height: h,
-                        width: w,
+                        name: this.newItem.name,
+                        height: parseFloat(this.newItem.height),
+                        width: parseFloat(this.newItem.width),
                     };
                     this.items.push(item);
-                    this.newItem = { name: '', dimensions: '' };
+                    this.newItem = { name: '', height: '', width: '' };
                     this.updateScaledSizes();
                     this.recalculateColors();
+                    this.saveItems();
                 },
 
                 editItem(index) {
                     const item = this.items[index];
                     this.newItem = {
                         name: item.name,
-                        dimensions: `${item.height} x ${item.width}`,
+                        height: item.height.toString(),
+                        width: item.width.toString(),
                     };
                     this.deleteItem(index);
                 },
