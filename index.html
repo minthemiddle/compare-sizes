@@ -70,10 +70,20 @@
                         this.saveItems();
                         this.updateScaledSizes();
                         this.recalculateColors();
+                        this.sortItems();
                     });
                     this.$watch('metric', () => this.updateScaledSizes());
                     this.updateScaledSizes();
                     this.recalculateColors();
+                    this.sortItems();
+                },
+
+                sortItems() {
+                    this.items.sort((a, b) => {
+                        const aFirstDimension = parseInt(a.dimensions.split('x')[0].trim());
+                        const bFirstDimension = parseInt(b.dimensions.split('x')[0].trim());
+                        return aFirstDimension - bFirstDimension;
+                    });
                 },
 
                 addItem() {
