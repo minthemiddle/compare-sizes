@@ -31,7 +31,10 @@
             <div class="mb-4">
                 <span class="text-sm text-gray-500">(Use same metric for all items, e.g. px, mm, in)</span>
             </div>
-            <button type="submit" aria-label="Add new item" class="mt-4 px-4 py-2 bg-blue-700 text-white rounded hover:bg-blue-800">Add Item</button>
+            <div class="flex space-x-4">
+                <button type="submit" aria-label="Add new item" class="mt-4 px-4 py-2 bg-blue-700 text-white rounded hover:bg-blue-800">Add Item</button>
+                <button type="button" @click="shareItems" aria-label="Share items" class="mt-4 px-4 py-2 bg-green-700 text-white rounded hover:bg-green-800">Share Items</button>
+            </div>
         </form>
 
         <h2 class="text-2xl font-bold mb-4">Size Comparison Visualization</h2>
@@ -72,6 +75,7 @@
                 maxSize: 0,
 
                 init() {
+                    this.loadSharedItems();
                     this.loadItems();
                     this.$watch('items', () => {
                         this.saveItems();
@@ -146,13 +150,14 @@
                     });
                 },
 
-
                 loadItems() {
-                    const savedItems = localStorage.getItem('items');
-                    if (savedItems) {
-                        this.items = JSON.parse(savedItems);
-                        this.updateScaledSizes();
-                        this.sortItems();
+                    if (this.items.length === 0) {
+                        const savedItems = localStorage.getItem('items');
+                        if (savedItems) {
+                            this.items = JSON.parse(savedItems);
+                            this.updateScaledSizes();
+                            this.sortItems();
+                        }
                     }
                 },
 
@@ -245,6 +250,46 @@
                         const newCursorPos = this.newItem.dimensions.indexOf('x', input.selectionStart) + 1;
                         input.setSelectionRange(newCursorPos, newCursorPos);
                     });
+                },
+
+                encodeItems() {
+                    return this.items.map(item => 
+                        `${encodeURIComponent(item.name)},${item.height},${item.width}`
+                    ).join(';');
+                },
+
+                decodeItems(encoded) {
+                    return encoded.split(';').map(item => {
+                        const [name, height, width] = item.split(',');
+                        return {
+                            name: decodeURIComponent(name),
+                            height: parseFloat(height),
+                            width: parseFloat(width)
+                        };
+                    });
+                },
+
+                shareItems() {
+                    const encoded = this.encodeItems();
+                    const url = `${window.location.origin}${window.location.pathname}?items=${encoded}`;
+                    navigator.clipboard.writeText(url).then(() => {
+                        alert('Shareable link copied to clipboard!');
+                    }).catch(err => {
+                        console.error('Failed to copy: ', err);
+                        alert('Failed to copy link. Please copy it manually: ' + url);
+                    });
+                },
+
+                loadSharedItems() {
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const encodedItems = urlParams.get('items');
+                    if (encodedItems) {
+                        this.items = this.decodeItems(encodedItems);
+                        this.updateScaledSizes();
+                        this.recalculateColors();
+                        this.sortItems();
+                        this.saveItems();
+                    }
                 }
             };
         }
