@@ -53,7 +53,7 @@
                     <li class="mb-2 p-2 bg-white rounded shadow flex flex-col sm:flex-row items-start sm:items-center justify-between">
                         <div class="flex items-center w-full sm:w-auto">
                             <div :style="`width: 20px; height: 20px; background-color: hsl(${item.color.split(',')[0]}, ${item.color.split(',')[1]}%, ${item.color.split(',')[2]}%); margin-right: 10px;`"></div>
-                            <span x-text="`${item.name}: ${item.dimensions}`" class="truncate max-w-[200px] sm:max-w-none"></span>
+                            <span x-text="`${item.name}: ${item.height} x ${item.width}`" class="truncate max-w-[200px] sm:max-w-none"></span>
                         </div>
                         <div class="mt-2 sm:mt-0">
                             <button @click="editItem(index)" aria-label="Edit item" class="px-2 py-1 border border-yellow-700 text-yellow-700 rounded hover:bg-yellow-700 hover:text-white">Edit</button>
@@ -101,12 +101,11 @@
                         return;
                     }
 
-                    const [h, w, l] = this.newItem.dimensions.split('x').map(n => parseInt(n.trim()));
+                    const [h, w] = this.newItem.dimensions.split('x').map(n => parseInt(n.trim()));
                     const item = {
                         ...this.newItem,
                         height: h,
                         width: w,
-                        length: l,
                     };
                     this.items.push(item);
                     this.newItem = { name: '', dimensions: '' };
@@ -118,7 +117,7 @@
                     const item = this.items[index];
                     this.newItem = {
                         name: item.name,
-                        dimensions: `${item.height} x ${item.width} x ${item.length}`,
+                        dimensions: `${item.height} x ${item.width}`,
                     };
                     this.deleteItem(index);
                 },
@@ -233,17 +232,19 @@
                 handleTabInDimensions(event) {
                     const parts = this.newItem.dimensions.split('x').map(part => part.trim());
                     const focusedPart = parts.findIndex(part => part === '');
-                    if (focusedPart === -1 || focusedPart === 2) return;
+                    if (focusedPart === -1 || focusedPart === 1) return;
                     
                     event.preventDefault();
                     const newParts = [...parts];
-                    newParts[focusedPart + 1] = '';
+                    if (focusedPart === 0) {
+                        newParts[1] = '';
+                    }
                     this.newItem.dimensions = newParts.join(' x ');
                     
                     // Force Alpine to re-evaluate the input
                     this.$nextTick(() => {
                         const input = event.target;
-                        const newCursorPos = this.newItem.dimensions.indexOf('x', input.selectionStart) + 2;
+                        const newCursorPos = this.newItem.dimensions.indexOf('x', input.selectionStart) + 1;
                         input.setSelectionRange(newCursorPos, newCursorPos);
                     });
                 }
