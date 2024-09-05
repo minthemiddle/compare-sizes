@@ -23,11 +23,11 @@
             <div class="mb-4 grid grid-cols-2 gap-4">
                 <div>
                     <label for="item-height" class="block mb-2">Height (H):</label>
-                    <input id="item-height" type="number" x-model="newItem.height" aria-label="Item height" class="w-full p-2 border rounded" required>
+                    <input id="item-height" type="text" x-model="newItem.height" aria-label="Item height" class="w-full p-2 border rounded" required pattern="[0-9]+(\.[0-9]+)?">
                 </div>
                 <div>
                     <label for="item-width" class="block mb-2">Width (W):</label>
-                    <input id="item-width" type="number" x-model="newItem.width" aria-label="Item width" class="w-full p-2 border rounded" required>
+                    <input id="item-width" type="text" x-model="newItem.width" aria-label="Item width" class="w-full p-2 border rounded" required pattern="[0-9]+(\.[0-9]+)?">
                 </div>
             </div>
             <div class="mb-4">
@@ -102,9 +102,13 @@
 
                     const item = {
                         name: this.newItem.name,
-                        height: parseInt(this.newItem.height),
-                        width: parseInt(this.newItem.width),
+                        height: parseFloat(this.newItem.height),
+                        width: parseFloat(this.newItem.width),
                     };
+                    if (isNaN(item.height) || isNaN(item.width)) {
+                        alert('Please enter valid numbers for height and width');
+                        return;
+                    }
                     this.items.push(item);
                     this.newItem = { name: '', height: '', width: '' };
                     this.updateScaledSizes();
