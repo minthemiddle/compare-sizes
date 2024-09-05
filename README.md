@@ -11,6 +11,8 @@ This app allows users to compare the sizes of different items visually. Users ca
 - **Edit and Delete Items**: Users can edit or delete existing items.
 - **Share Items**: Users can generate a shareable link to share their list of items with others.
 - **Persistent Storage**: Items are saved in the browser's local storage and can be reloaded on subsequent visits.
+- **Color Calculation**: Each item is assigned a unique color to enhance visual distinction. The colors are calculated to maximize contrast between adjacent items, making it easier to differentiate them in the visualization.
+- **Color Calculation**: Each item is assigned a unique color to enhance visual distinction. The colors are calculated to maximize contrast between adjacent items, making it easier to differentiate them in the visualization.
 
 ## How to Run the App
 
