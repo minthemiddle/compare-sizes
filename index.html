@@ -39,7 +39,8 @@
         <h2 class="text-2xl font-bold mb-4">Size Comparison Visualization</h2>
         <div class="relative bg-white border border-gray-300" style="height: 500px; width: 100%;">
             <template x-for="(item, index) in items" :key="index">
-                <div :style="`position: absolute; left: 0; top: 0; width: ${item.scaledWidth}px; height: ${item.scaledHeight}px; border: 2px solid hsl(${item.color.split(',')[0]}, ${item.color.split(',')[1]}%, ${item.color.split(',')[2]}%); z-index: ${items.length - index};`">
+                <div :style="`position: absolute; left: 0; bottom: 0; width: ${item.scaledWidth}px; height: ${item.scaledHeight}px; border: 2px solid hsl(${item.color.split(',')[0]}, ${item.color.split(',')[1]}%, ${item.color.split(',')[2]}%); z-index: ${items.length - index};`"
+                     :title="`${item.name}: ${item.height} x ${item.width}`">
                 </div>
             </template>
         </div>
@@ -139,13 +140,13 @@
                 updateScaledSizes() {
                     const containerHeight = 500;
                     const containerWidth = document.querySelector('.relative').offsetWidth;
-                    this.maxSize = Math.max(...this.items.map(item => Math.max(item.height, item.width, item.length)));
+                    this.maxSize = Math.max(...this.items.map(item => Math.max(item.height, item.width)));
                     const scaleHeight = containerHeight / this.maxSize;
                     const scaleWidth = containerWidth / this.maxSize;
-                    const scale = Math.min(scaleHeight, scaleWidth, 20);
-                    this.items.forEach((item, index) => {
-                        item.scaledHeight = Math.max(item.height * scale, 20);
-                        item.scaledWidth = Math.max(item.width * scale, 20);
+                    const scale = Math.min(scaleHeight, scaleWidth);
+                    this.items.forEach((item) => {
+                        item.scaledHeight = item.height * scale;
+                        item.scaledWidth = item.width * scale;
                     });
                 },
 
