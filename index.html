@@ -79,6 +79,11 @@
                     this.$watch('metric', () => this.updateScaledSizes());
                     this.updateScaledSizes();
                     this.newItem.color = this.generateRandomColors(1)[0];
+                    this.items.forEach(item => {
+                        if (!item.color || !item.color.match(/^\d{1,3},\d{1,2},\d{1,2}$/)) {
+                            item.color = this.generateRandomColors(1)[0];
+                        }
+                    });
                 },
 
                 addItem() {
