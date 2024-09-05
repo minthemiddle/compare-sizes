@@ -86,11 +86,7 @@
                 },
 
                 sortItems() {
-                    this.items.sort((a, b) => {
-                        const aFirstDimension = parseInt(a.dimensions.split('x')[0].trim());
-                        const bFirstDimension = parseInt(b.dimensions.split('x')[0].trim());
-                        return aFirstDimension - bFirstDimension;
-                    });
+                    this.items.sort((a, b) => b.height - a.height);
                 },
 
                 addItem() {
@@ -108,6 +104,7 @@
                     this.newItem = { name: '', height: '', width: '' };
                     this.updateScaledSizes();
                     this.recalculateColors();
+                    this.sortItems();
                     this.saveItems();
                 },
 
@@ -125,6 +122,7 @@
                     this.items.splice(index, 1);
                     this.updateScaledSizes();
                     this.recalculateColors();
+                    this.sortItems();
                 },
 
                 recalculateColors() {
@@ -154,6 +152,7 @@
                     if (savedItems) {
                         this.items = JSON.parse(savedItems);
                         this.updateScaledSizes();
+                        this.sortItems();
                     }
                 },
 
