@@ -162,14 +162,40 @@
                 },
 
                 sortColorsByDelta(colors) {
-                    return colors.sort((a, b) => {
-                        const [h1, s1, l1] = a.split(',').map(Number);
-                        const [h2, s2, l2] = b.split(',').map(Number);
-                        const deltaH = Math.abs(h1 - h2);
-                        const deltaS = Math.abs(s1 - s2);
-                        const deltaL = Math.abs(l1 - l2);
-                        return deltaH + deltaS + deltaL;
-                    });
+                    const sortedColors = [];
+                    let remainingColors = [...colors];
+
+                    // Select the first color
+                    sortedColors.push(remainingColors.shift());
+
+                    // Iteratively select the color that maximizes the minimum distance to the already selected colors
+                    while (remainingColors.length > 0) {
+                        let maxMinDistance = -1;
+                        let nextColorIndex = -1;
+
+                        remainingColors.forEach((color, index) => {
+                            const [h, s, l] = color.split(',').map(Number);
+                            let minDistance = Infinity;
+
+                            sortedColors.forEach(selectedColor => {
+                                const [sh, ss, sl] = selectedColor.split(',').map(Number);
+                                const deltaH = Math.abs(h - sh);
+                                const deltaS = Math.abs(s - ss);
+                                const deltaL = Math.abs(l - sl);
+                                const distance = deltaH + deltaS + deltaL;
+                                minDistance = Math.min(minDistance, distance);
+                            });
+
+                            if (minDistance > maxMinDistance) {
+                                maxMinDistance = minDistance;
+                                nextColorIndex = index;
+                            }
+                        });
+
+                        sortedColors.push(remainingColors.splice(nextColorIndex, 1)[0]);
+                    }
+
+                    return sortedColors;
                 },
 
                 saveItems() {
