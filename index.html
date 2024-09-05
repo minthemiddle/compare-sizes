@@ -141,21 +141,35 @@
                 },
 
                 harmonizeColors() {
-                    const colors = this.items.map(item => item.color);
-                    const shuffledColors = this.shuffleColors(colors);
+                    const numItems = this.items.length;
+                    const colors = this.generateRandomColors(numItems);
+                    const sortedColors = this.sortColorsByDelta(colors);
                     this.items.forEach((item, index) => {
-                        item.color = shuffledColors[index];
+                        item.color = sortedColors[index];
                     });
                     this.updateScaledSizes();
                 },
 
-                shuffleColors(colors) {
-                    const shuffled = colors.slice();
-                    for (let i = shuffled.length - 1; i > 0; i--) {
-                        const j = Math.floor(Math.random() * (i + 1));
-                        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+                generateRandomColors(num) {
+                    const colors = [];
+                    for (let i = 0; i < num; i++) {
+                        const h = Math.floor(Math.random() * 360);
+                        const s = Math.floor(Math.random() * 100);
+                        const l = Math.floor(Math.random() * 100);
+                        colors.push(`${h},${s},${l}`);
                     }
-                    return shuffled;
+                    return colors;
+                },
+
+                sortColorsByDelta(colors) {
+                    return colors.sort((a, b) => {
+                        const [h1, s1, l1] = a.split(',').map(Number);
+                        const [h2, s2, l2] = b.split(',').map(Number);
+                        const deltaH = Math.abs(h1 - h2);
+                        const deltaS = Math.abs(s1 - s2);
+                        const deltaL = Math.abs(l1 - l2);
+                        return deltaH + deltaS + deltaL;
+                    });
                 },
 
                 saveItems() {
