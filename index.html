@@ -12,23 +12,25 @@
     <div x-data="app()" x-init="init()" class="max-w-4xl mx-auto">
         <h1 class="text-3xl font-bold mb-4">Item Size Comparison</h1>
 
+        <h2 class="text-2xl font-bold mb-4">Add New Item</h2>
         <form @submit.prevent="addItem" class="mb-8">
             <div class="grid grid-cols-2 gap-4">
                 <div>
-                    <label class="block mb-2">Name:</label>
-                    <input type="text" x-model="newItem.name" class="w-full p-2 border rounded" required>
+                    <label for="item-name" class="block mb-2">Name:</label>
+                    <input id="item-name" type="text" x-model="newItem.name" aria-label="Item name" class="w-full p-2 border rounded" required>
                 </div>
             </div>
             <div class="mb-4">
-                <label class="block mb-2">Dimensions (H x W x L):</label>
+                <label for="item-dimensions" class="block mb-2">Dimensions (H x W x L):</label>
                 <div class="flex items-center">
-                    <input type="text" x-model="newItem.dimensions" x-mask="99 'x' 99 'x' 99" placeholder="__ x __ x __" class="w-full p-2 border rounded" required>
+                    <input id="item-dimensions" type="text" x-model="newItem.dimensions" x-mask="99 'x' 99 'x' 99" aria-label="Item dimensions" aria-description="Enter height, width, and length separated by 'x'" placeholder="__ x __ x __" class="w-full p-2 border rounded" required>
                     <span class="ml-2 text-sm text-gray-500">(Use same metric for all items, e.g. px, mm, in)</span>
                 </div>
             </div>
-            <button type="submit" class="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">Add Item</button>
+            <button type="submit" aria-label="Add new item" class="mt-4 px-4 py-2 bg-blue-700 text-white rounded hover:bg-blue-800">Add Item</button>
         </form>
 
+        <h2 class="text-2xl font-bold mb-4">Size Comparison Visualization</h2>
         <div class="relative bg-white border border-gray-300" style="height: 500px; width: 100%;">
             <template x-for="(item, index) in items" :key="index">
                 <div :style="`position: absolute; left: 0; top: 0; width: ${item.scaledWidth}px; height: ${item.scaledHeight}px; border: 2px solid hsl(${item.color.split(',')[0]}, ${item.color.split(',')[1]}%, ${item.color.split(',')[2]}%); z-index: ${items.length - index};`">
@@ -47,8 +49,8 @@
                             <span x-text="`${item.name} (${item.dimensions})`"></span>
                         </div>
                         <div>
-                            <button @click="editItem(index)" class="ml-2 px-2 py-1 border border-yellow-500 text-yellow-500 rounded hover:bg-yellow-500 hover:text-white">Edit</button>
-                            <button @click="deleteItem(index)" class="ml-2 px-2 py-1 border border-red-500 text-red-500 rounded hover:bg-red-500 hover:text-white">Delete</button>
+                            <button @click="editItem(index)" aria-label="Edit item" class="ml-2 px-2 py-1 border border-yellow-700 text-yellow-700 rounded hover:bg-yellow-700 hover:text-white">Edit</button>
+                            <button @click="deleteItem(index)" aria-label="Delete item" class="ml-2 px-2 py-1 border border-red-700 text-red-700 rounded hover:bg-red-700 hover:text-white">Delete</button>
                         </div>
                     </li>
                 </template>
