@@ -78,6 +78,7 @@
                     });
                     this.$watch('metric', () => this.updateScaledSizes());
                     this.updateScaledSizes();
+                    this.newItem.color = this.generateRandomColors(1)[0];
                 },
 
                 addItem() {
