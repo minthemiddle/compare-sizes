@@ -113,6 +113,7 @@
                     this.newItem = { name: '', height: '', width: '' };
                     this.updateScaledSizes();
                     this.recalculateColors();
+                    this.sortItems();
                 },
 
                 editItem(index) {
@@ -129,6 +130,7 @@
                     this.items.splice(index, 1);
                     this.updateScaledSizes();
                     this.recalculateColors();
+                    this.sortItems();
                 },
 
                 recalculateColors() {
