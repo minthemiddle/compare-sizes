@@ -43,13 +43,13 @@
             <h2 class="text-2xl font-bold mb-4">Item List</h2>
             <ul>
                 <template x-for="(item, index) in items" :key="index">
-                    <li class="mb-2 p-2 bg-white rounded shadow flex items-center justify-between">
-                        <div class="flex items-center">
+                    <li class="mb-2 p-2 bg-white rounded shadow flex flex-col sm:flex-row items-start sm:items-center justify-between">
+                        <div class="flex items-center w-full sm:w-auto">
                             <div :style="`width: 20px; height: 20px; background-color: hsl(${item.color.split(',')[0]}, ${item.color.split(',')[1]}%, ${item.color.split(',')[2]}%); margin-right: 10px;`"></div>
-                            <span x-text="`${item.name}: ${item.dimensions}`"></span>
+                            <span x-text="`${item.name}: ${item.dimensions}`" class="truncate max-w-[200px] sm:max-w-none"></span>
                         </div>
-                        <div>
-                            <button @click="editItem(index)" aria-label="Edit item" class="ml-2 px-2 py-1 border border-yellow-700 text-yellow-700 rounded hover:bg-yellow-700 hover:text-white">Edit</button>
+                        <div class="mt-2 sm:mt-0">
+                            <button @click="editItem(index)" aria-label="Edit item" class="px-2 py-1 border border-yellow-700 text-yellow-700 rounded hover:bg-yellow-700 hover:text-white">Edit</button>
                             <button @click="deleteItem(index)" aria-label="Delete item" class="ml-2 px-2 py-1 border border-red-700 text-red-700 rounded hover:bg-red-700 hover:text-white">Delete</button>
                         </div>
                     </li>
