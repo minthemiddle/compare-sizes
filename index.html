@@ -20,12 +20,18 @@
                     <input id="item-name" type="text" x-model="newItem.name" aria-label="Item name" class="w-full p-2 border rounded" required>
                 </div>
             </div>
-            <div class="mb-4">
-                <label for="item-dimensions" class="block mb-2">Dimensions (H x W):</label>
-                <div class="flex items-center">
-                    <input id="item-dimensions" type="text" x-model="newItem.dimensions" x-mask:dynamic="dimensionsMask" @keydown.tab.prevent="handleTabInDimensions" aria-label="Item dimensions" aria-description="Enter height and width separated by 'x'" placeholder="__ x __" class="w-full p-2 border rounded" required>
-                    <span class="ml-2 text-sm text-gray-500">(Use same metric for all items, e.g. px, mm, in)</span>
+            <div class="mb-4 grid grid-cols-2 gap-4">
+                <div>
+                    <label for="item-height" class="block mb-2">Height (H):</label>
+                    <input id="item-height" type="number" x-model="newItem.height" aria-label="Item height" class="w-full p-2 border rounded" required>
                 </div>
+                <div>
+                    <label for="item-width" class="block mb-2">Width (W):</label>
+                    <input id="item-width" type="number" x-model="newItem.width" aria-label="Item width" class="w-full p-2 border rounded" required>
+                </div>
+            </div>
+            <div class="mb-4">
+                <span class="text-sm text-gray-500">(Use same metric for all items, e.g. px, mm, in)</span>
             </div>
             <button type="submit" aria-label="Add new item" class="mt-4 px-4 py-2 bg-blue-700 text-white rounded hover:bg-blue-800">Add Item</button>
         </form>
@@ -46,7 +52,7 @@
                     <li class="mb-2 p-2 bg-white rounded shadow flex flex-col sm:flex-row items-start sm:items-center justify-between">
                         <div class="flex items-center w-full sm:w-auto">
                             <div :style="`width: 20px; height: 20px; background-color: hsl(${item.color.split(',')[0]}, ${item.color.split(',')[1]}%, ${item.color.split(',')[2]}%); margin-right: 10px;`"></div>
-                            <span x-text="`${item.name}: ${item.dimensions}`" class="truncate max-w-[200px] sm:max-w-none"></span>
+                            <span x-text="`${item.name}: ${item.height} x ${item.width}`" class="truncate max-w-[200px] sm:max-w-none"></span>
                         </div>
                         <div class="mt-2 sm:mt-0">
                             <button @click="editItem(index)" aria-label="Edit item" class="px-2 py-1 border border-yellow-700 text-yellow-700 rounded hover:bg-yellow-700 hover:text-white">Edit</button>
@@ -62,7 +68,7 @@
         function app() {
             return {
                 items: [],
-                newItem: { name: '', dimensions: '' },
+                newItem: { name: '', height: '', width: '' },
                 metric: 'in',
                 maxSize: 0,
 
@@ -94,14 +100,13 @@
                         return;
                     }
 
-                    const [h, w] = this.newItem.dimensions.split('x').map(n => parseInt(n.trim()));
                     const item = {
-                        ...this.newItem,
-                        height: h,
-                        width: w,
+                        name: this.newItem.name,
+                        height: parseInt(this.newItem.height),
+                        width: parseInt(this.newItem.width),
                     };
                     this.items.push(item);
-                    this.newItem = { name: '', dimensions: '' };
+                    this.newItem = { name: '', height: '', width: '' };
                     this.updateScaledSizes();
                     this.recalculateColors();
                 },
@@ -110,7 +115,8 @@
                     const item = this.items[index];
                     this.newItem = {
                         name: item.name,
-                        dimensions: `${item.height} x ${item.width}`,
+                        height: item.height.toString(),
+                        width: item.width.toString(),
                     };
                     this.deleteItem(index);
                 },
@@ -212,33 +218,7 @@
                     localStorage.setItem('items', JSON.stringify(this.items));
                 },
 
-                dimensionsMask($input) {
-                    const parts = $input.split('x').map(part => part.trim());
-                    let mask = '';
-                    for (let i = 0; i < 2; i++) {
-                        if (i > 0) mask += ' x ';
-                        mask += parts[i] ? '99' : '__';
-                    }
-                    return mask;
-                },
-
-                handleTabInDimensions(event) {
-                    const parts = this.newItem.dimensions.split('x').map(part => part.trim());
-                    const focusedPart = parts.findIndex(part => part === '');
-                    if (focusedPart === -1 || focusedPart === 1) return;
-                    
-                    event.preventDefault();
-                    const newParts = [...parts];
-                    newParts[focusedPart + 1] = '';
-                    this.newItem.dimensions = newParts.join(' x ');
-                    
-                    // Force Alpine to re-evaluate the input
-                    this.$nextTick(() => {
-                        const input = event.target;
-                        const newCursorPos = this.newItem.dimensions.indexOf('x', input.selectionStart) + 2;
-                        input.setSelectionRange(newCursorPos, newCursorPos);
-                    });
-                }
+                // Removed dimensionsMask and handleTabInDimensions functions
             };
         }
     </script>
