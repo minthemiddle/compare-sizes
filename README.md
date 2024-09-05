@@ -21,3 +21,5 @@ This app allows users to compare the sizes of different items visually. Users ca
 3. Use the "Share Items" button to generate a shareable link.
 
 Enjoy comparing item sizes!
+
+![App Screenshot](screenshot.png)
