@@ -13,20 +13,10 @@
         <h1 class="text-3xl font-bold mb-4">Item Size Comparison</h1>
 
         <div class="mb-4">
-            <label class="block mb-2">Metric:</label>
-            <div>
-                <label class="inline-flex items-center mr-4">
-                    <input type="radio" x-model="metric" value="in" class="form-radio">
-                    <span class="ml-2">Inches</span>
-                </label>
-                <label class="inline-flex items-center mr-4">
-                    <input type="radio" x-model="metric" value="mm" class="form-radio">
-                    <span class="ml-2">Millimeters</span>
-                </label>
-                <label class="inline-flex items-center">
-                    <input type="radio" x-model="metric" value="px" class="form-radio">
-                    <span class="ml-2">Pixels</span>
-                </label>
+            <label class="block mb-2">Dimensions (H x W x L):</label>
+            <div class="flex items-center">
+                <input type="text" x-model="newItem.dimensions" x-mask="99 'x' 99 'x' 99" placeholder="__ x __ x __" class="w-full p-2 border rounded" required>
+                <span class="ml-2 text-sm text-gray-500">(Use same metric for all items, e.g. px, mm, in)</span>
             </div>
         </div>
 
