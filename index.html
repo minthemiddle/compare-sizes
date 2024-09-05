@@ -52,7 +52,7 @@
                     <li class="mb-2 p-2 bg-white rounded shadow flex flex-col sm:flex-row items-start sm:items-center justify-between">
                         <div class="flex items-center w-full sm:w-auto">
                             <div :style="`width: 20px; height: 20px; background-color: hsl(${item.color.split(',')[0]}, ${item.color.split(',')[1]}%, ${item.color.split(',')[2]}%); margin-right: 10px;`"></div>
-                            <span x-text="`${item.name}: ${item.height} x ${item.width}`" class="truncate max-w-[200px] sm:max-w-none"></span>
+                            <span x-text="`${item.name}: ${item.dimensions}`" class="truncate max-w-[200px] sm:max-w-none"></span>
                         </div>
                         <div class="mt-2 sm:mt-0">
                             <button @click="editItem(index)" aria-label="Edit item" class="px-2 py-1 border border-yellow-700 text-yellow-700 rounded hover:bg-yellow-700 hover:text-white">Edit</button>
@@ -68,7 +68,7 @@
         function app() {
             return {
                 items: [],
-                newItem: { name: '', height: '', width: '' },
+                newItem: { name: '', dimensions: '' },
                 metric: 'in',
                 maxSize: 0,
 
@@ -100,28 +100,24 @@
                         return;
                     }
 
+                    const [h, w, l] = this.newItem.dimensions.split('x').map(n => parseInt(n.trim()));
                     const item = {
-                        name: this.newItem.name,
-                        height: parseFloat(this.newItem.height),
-                        width: parseFloat(this.newItem.width),
+                        ...this.newItem,
+                        height: h,
+                        width: w,
+                        length: l,
                     };
-                    if (isNaN(item.height) || isNaN(item.width)) {
-                        alert('Please enter valid numbers for height and width');
-                        return;
-                    }
                     this.items.push(item);
-                    this.newItem = { name: '', height: '', width: '' };
+                    this.newItem = { name: '', dimensions: '' };
                     this.updateScaledSizes();
                     this.recalculateColors();
-                    this.sortItems();
                 },
 
                 editItem(index) {
                     const item = this.items[index];
                     this.newItem = {
                         name: item.name,
-                        height: item.height.toString(),
-                        width: item.width.toString(),
+                        dimensions: `${item.height} x ${item.width} x ${item.length}`,
                     };
                     this.deleteItem(index);
                 },
@@ -130,7 +126,6 @@
                     this.items.splice(index, 1);
                     this.updateScaledSizes();
                     this.recalculateColors();
-                    this.sortItems();
                 },
 
                 recalculateColors() {
@@ -144,7 +139,7 @@
                 updateScaledSizes() {
                     const containerHeight = 500;
                     const containerWidth = document.querySelector('.relative').offsetWidth;
-                    this.maxSize = Math.max(...this.items.map(item => Math.max(item.height, item.width)));
+                    this.maxSize = Math.max(...this.items.map(item => Math.max(item.height, item.width, item.length)));
                     const scaleHeight = containerHeight / this.maxSize;
                     const scaleWidth = containerWidth / this.maxSize;
                     const scale = Math.min(scaleHeight, scaleWidth, 20);
@@ -224,7 +219,33 @@
                     localStorage.setItem('items', JSON.stringify(this.items));
                 },
 
-                // Removed dimensionsMask and handleTabInDimensions functions
+                dimensionsMask($input) {
+                    const parts = $input.split('x').map(part => part.trim());
+                    let mask = '';
+                    for (let i = 0; i < 3; i++) {
+                        if (i > 0) mask += ' x ';
+                        mask += parts[i] ? '99' : '__';
+                    }
+                    return mask;
+                },
+
+                handleTabInDimensions(event) {
+                    const parts = this.newItem.dimensions.split('x').map(part => part.trim());
+                    const focusedPart = parts.findIndex(part => part === '');
+                    if (focusedPart === -1 || focusedPart === 2) return;
+                    
+                    event.preventDefault();
+                    const newParts = [...parts];
+                    newParts[focusedPart + 1] = '';
+                    this.newItem.dimensions = newParts.join(' x ');
+                    
+                    // Force Alpine to re-evaluate the input
+                    this.$nextTick(() => {
+                        const input = event.target;
+                        const newCursorPos = this.newItem.dimensions.indexOf('x', input.selectionStart) + 2;
+                        input.setSelectionRange(newCursorPos, newCursorPos);
+                    });
+                }
             };
         }
     </script>
