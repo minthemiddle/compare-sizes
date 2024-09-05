@@ -57,6 +57,7 @@
                         </div>
                     </li>
                 </template>
+                <button @click="harmonizeColors" class="mt-4 px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600">Harmonize Colors</button>
             </ul>
         </div>
     </div>
@@ -137,6 +138,24 @@
                         this.items = JSON.parse(savedItems);
                         this.updateScaledSizes();
                     }
+                },
+
+                harmonizeColors() {
+                    const colors = this.items.map(item => item.color);
+                    const shuffledColors = this.shuffleColors(colors);
+                    this.items.forEach((item, index) => {
+                        item.color = shuffledColors[index];
+                    });
+                    this.updateScaledSizes();
+                },
+
+                shuffleColors(colors) {
+                    const shuffled = colors.slice();
+                    for (let i = shuffled.length - 1; i > 0; i--) {
+                        const j = Math.floor(Math.random() * (i + 1));
+                        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+                    }
+                    return shuffled;
                 },
 
                 saveItems() {
