@@ -154,9 +154,7 @@
                     const colors = [];
                     for (let i = 0; i < num; i++) {
                         const h = Math.floor(Math.random() * 360);
-                        const s = Math.floor(Math.random() * 100);
-                        const l = Math.floor(Math.random() * 100);
-                        colors.push(`${h},${s},${l}`);
+                        colors.push(`${h},100,50`);
                     }
                     return colors;
                 },
