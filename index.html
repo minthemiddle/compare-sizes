@@ -50,7 +50,7 @@
 
         <div class="relative bg-white border border-gray-300" style="height: 500px; width: 100%;">
             <template x-for="(item, index) in items" :key="index">
-                <div :style="`position: absolute; left: 0; top: 0; width: ${item.scaledWidth}px; height: ${item.scaledHeight}px; border: 2px solid hsl(${item.color.split(',')[0]}, ${item.color.split(',')[1]}%, ${item.color.split(',')[2]}%); background-color: hsla(${item.color.split(',')[0]}, ${item.color.split(',')[1]}%, ${item.color.split(',')[2]}%, 0.3); z-index: ${items.length - index};`">
+                <div :style="`position: absolute; left: 0; top: 0; width: ${item.scaledWidth}px; height: ${item.scaledHeight}px; border: 2px solid hsl(${item.color.split(',')[0]}, ${item.color.split(',')[1]}%, ${item.color.split(',')[2]}%); z-index: ${items.length - index};`">
                 </div>
             </template>
         </div>
